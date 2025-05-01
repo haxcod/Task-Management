@@ -1,25 +1,23 @@
 
-# 📝 Task Management System
+# Task Management System
 
-A feature-rich web application for managing tasks within a small team. Built with **React.js**, **NestJS**, and **MongoDB**, this system enables users to efficiently create, assign, and track tasks with collaboration features and secure authentication.
+A feature-rich web application for managing tasks within a small team. Built with **React.js**, **NodeJS**, and **MongoDB**, this system enables users to efficiently create, assign, and track tasks with collaboration features and secure authentication.
 
 ---
 
-## 🚀 Live Demo
+## Live Demo
 
 🔗 [View Deployed App](https://your-deployment-url.com)
 
 ---
 
-## 📁 Tech Stack
+## Tech Stack
 
 | Frontend | Backend | Database | Auth | Deployment |
 |----------|---------|----------|------|-------------|
 | React.js  | NodeJs / Express | MongoDB | JWT | Vercel / Render |
 
 ---
-
-## 🔐 Features
 
 ### ✅ Core
 - **User Authentication**: Secure sign up and login using JWT.
@@ -31,7 +29,7 @@ A feature-rich web application for managing tasks within a small team. Built wit
 
 ---
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (>= 18)
@@ -79,7 +77,7 @@ A feature-rich web application for managing tasks within a small team. Built wit
 
 ---
 
-## 💡 Assumptions & Decisions
+## Assumptions & Decisions
 
 - Notifications are in-app only (no email/SMS).
 - MongoDB was chosen for flexibility in data modeling.
@@ -87,7 +85,7 @@ A feature-rich web application for managing tasks within a small team. Built wit
 
 ---
 
-## 📈 Future Improvements
+## Future Improvements
 
 - Add Gantt chart/calendar views
 - Email notifications
