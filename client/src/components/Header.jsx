@@ -1,7 +1,18 @@
 import { ArrowLeft, Bell, Menu, Search } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
+import { notifyTaskAssignment } from "../lib/notifyTaskAssignment";
+
 
 function Header({ sidebarOpen, setSidebarOpen }) {
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      Notification.requestPermission().then((perm) => {
+        console.log("Permission:", perm);
+      });
+    }
+  }, []);
+
   return (
     <header className="bg-white shadow-sm">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -25,8 +36,8 @@ function Header({ sidebarOpen, setSidebarOpen }) {
           </div>
         </div>
 
-        <div className="flex items-center ml-4 space-x-4">
-          <div className="relative">
+        {/* <div className="flex items-center ml-4 space-x-4">
+          <div className="relative" onClick={()=>navigate('/notification')}>
             <button className="p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none">
               <Bell size={20} />
             </button>
@@ -34,7 +45,7 @@ function Header({ sidebarOpen, setSidebarOpen }) {
               3
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
       {/* <div className="px-4 py-2 bg-white border-t border-gray-200 sm:px-6 lg:px-8">
         <div className="flex items-center">

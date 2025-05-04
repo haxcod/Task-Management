@@ -2,7 +2,7 @@ import { MoreVertical } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import PriorityBadge from "./PriorityBadge";
 
-const TaskCard = ({ task, isOverdue = false }) => {
+const TaskCard = ({ task, isOverdue = false, onEdit }) => {
   return (
     <li>
       <div
@@ -50,7 +50,12 @@ const TaskCard = ({ task, isOverdue = false }) => {
           </div>
         </div>
         <div className="ml-5 flex-shrink-0">
-          <button className="p-1 rounded-full text-gray-400 hover:text-gray-500">
+          <button
+            className="p-1 rounded-full text-gray-400 hover:text-gray-500"
+            onClick={() => {
+              onEdit(task);
+            }}
+          >
             <MoreVertical size={16} />
           </button>
         </div>

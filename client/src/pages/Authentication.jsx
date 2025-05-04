@@ -9,6 +9,10 @@ import {
   Github,
   Loader,
 } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthenticationPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,17 +21,42 @@ export default function AuthenticationPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [cookies, setCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate authentication process
-    setTimeout(() => {
+    try {
+      if (isLogin) {
+        const { data } = await axios.post(
+          "http://localhost:3000/api/v1/login",
+          { email, password }
+        );
+
+        if (data?.data?.token) {
+          setCookie("token", data.data.token, { path: "/" });
+          toast.success("Login successful!");
+          navigate("/");
+        }
+      } else {
+        const { data } = await axios.post(
+          "http://localhost:3000/api/v1/register",
+          { name, email, password }
+        );
+
+        if (data) {
+          toast.success("Registration successful!");
+          setIsLogin(true);
+        }
+      }
+    } catch (err) {
+      console.error("Auth error:", err?.response?.data?.err || err.message);
+      toast.error(err?.response?.data?.err || "Something went wrong");
+    } finally {
       setIsLoading(false);
-      // In real implementation, you would handle auth logic here
-      console.log("Form submitted:", { email, password, name });
-    }, 1500);
+    }
   };
 
   const toggleAuthMode = () => {
@@ -308,10 +337,6 @@ export default function AuthenticationPage() {
             </button>
           </p>
         </div>
-      </div>
-
-      <div className="mt-8 text-center text-xs text-gray-700">
-        <p>© 2025 TaskFlow. All rights reserved.</p>
       </div>
     </div>
   );
