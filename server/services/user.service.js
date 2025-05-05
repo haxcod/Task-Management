@@ -64,5 +64,15 @@ const loginUser = async (email, password) => {
     }
 };
 
+const allUsers = async (currentUserId) => {
+    try {
+      const users = await User.find({ _id: { $ne: currentUserId } });
+      return users;
+    } catch (err) {
+      console.error("Error fetching users:", err.message);
+      throw err;
+    }
+  }
 
-module.exports = { registrationUser, loginUser }
+
+module.exports = { registrationUser, loginUser, allUsers };

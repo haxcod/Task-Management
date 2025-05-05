@@ -1,33 +1,54 @@
-import { useState } from "react";
-import {
-  X,
-  Clock,
-  AlertCircle,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Clock, AlertCircle } from "lucide-react";
 import Drawer from "../components/Drawer";
 import Header from "../components/Header";
+import axios from "axios";
+import { toast } from "react-toastify";
+import {useCookies} from 'react-cookie'
 
 export default function CreateTaskPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [teamMembers, setTeamMembers] = useState([])
+  const [cookie, setCookie] = useCookies(['id'])
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     dueDate: "",
-    dueTime: "12:00",
+    dueTime: "",
     priority: "Medium",
     status: "Pending",
     assignedTo: "",
+    createdBy: cookie.id,
   });
   const [errors, setErrors] = useState({});
 
-  const teamMembers = [
-    { id: 1, name: "Michael Brown", email: "michael@example.com" },
-    { id: 2, name: "Emily Davis", email: "emily@example.com" },
-    { id: 3, name: "Sarah Parker", email: "sarah@example.com" },
-    { id: 4, name: "James Wilson", email: "james@example.com" },
-    { id: 5, name: "Alex Johnson (You)", email: "alex@example.com" },
-  ];
+  
+
+  // const teamMembers = [
+  //   { id: 1, name: "Michael Brown", email: "michael@example.com" },
+  //   { id: 2, name: "Emily Davis", email: "emily@example.com" },
+  //   { id: 3, name: "Sarah Parker", email: "sarah@example.com" },
+  //   { id: 4, name: "James Wilson", email: "james@example.com" },
+  //   { id: 5, name: "Alex Johnson (You)", email: "alex@example.com" },
+  // ];
+
+  useEffect(()=>{
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/v1/users");
+        console.log(response.data.data);
+        
+        setTeamMembers(response.data.data);
+      } catch (error) {
+        console.error("Error fetching team members:", error);
+      }
+    };
+
+    fetchTeamMembers();
+  },[])
+
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,14 +83,36 @@ export default function CreateTaskPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("Form data before submission:", formData);
+    
     if (validateForm()) {
-      // Here you would typically submit the form data to your backend
-      console.log("Form submitted:", formData);
-      alert("Task created successfully!");
-      // Reset form or redirect
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/v1/tasks",
+          formData
+        );
+        const createdTask = response?.data?.data;
+
+        if (createdTask) {
+          toast.success("Task Created");
+          setFormData({
+            title: "",
+            assignedTo: "",
+            description: "",
+            dueDate: "",
+            dueTime: "",
+            priority: "",
+            status: "",
+          });
+        } else {
+          toast.error("Unexpected response from server.");
+        }
+      } catch (err) {
+        console.error("Task creation failed:", err);
+        toast.error("Failed to create task. Please try again.");
+      }
     }
   };
 
@@ -86,12 +129,12 @@ export default function CreateTaskPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">
       {/* Sidebar */}
-     <Drawer sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+      <Drawer sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top navbar */}
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Main content area */}
         <main className="flex-1 overflow-y-auto p-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -323,7 +366,7 @@ export default function CreateTaskPage() {
                     >
                       <option value="">Select a team member</option>
                       {teamMembers.map((member) => (
-                        <option key={member.id} value={member.id}>
+                        <option key={member._id} value={member._id}>
                           {member.name}
                         </option>
                       ))}

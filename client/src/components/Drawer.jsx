@@ -1,12 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart2,
   List,
-  Users,
-  Calendar,
-  PieChart,
-  Crown,
   Settings,
   X,
 } from "lucide-react";

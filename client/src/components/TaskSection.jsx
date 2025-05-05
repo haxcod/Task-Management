@@ -17,7 +17,7 @@ const TaskSection = ({ title, tasks = [], isOverdue = false, onEdit}) => {
         {hasTasks ? (
           tasks.map((task) => (
             <TaskCard
-              key={task.id}
+              key={task._id}
               task={task}
               isOverdue={isOverdue}
               onEdit={onEdit}

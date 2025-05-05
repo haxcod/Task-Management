@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import PrivateRoute from "./routes/PrivateRoute";
 import TaskDashboard from "./pages/TaskDashboard";
 import UpdateTask from "./pages/UpdateTask";
-
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const routes = createBrowserRouter([

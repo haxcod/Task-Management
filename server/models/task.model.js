@@ -30,9 +30,16 @@ const taskSchema = new mongoose.Schema({
         default: 'Pending'
     },
     assignedTo: {
-        type: String,
-        required: false,
-    }
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
+
 }, { timestamps: true });
 
 const Task = mongoose.model('Task', taskSchema);

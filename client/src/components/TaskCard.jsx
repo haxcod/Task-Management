@@ -1,6 +1,7 @@
 import { MoreVertical } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import PriorityBadge from "./PriorityBadge";
+import { formatDate } from "../hooks/formattedDate";
 
 const TaskCard = ({ task, isOverdue = false, onEdit }) => {
   return (
@@ -28,12 +29,12 @@ const TaskCard = ({ task, isOverdue = false, onEdit }) => {
                 )}
                 {isOverdue ? (
                   <span className="ml-1 text-sm text-red-500 font-medium">
-                    Due {task.dueDate} ({task.overdueDays} day
+                    Due {formatDate(task.dueDate)} ({formatDate(task.overdueDays)} day
                     {task.overdueDays > 1 ? "s" : ""} overdue)
                   </span>
                 ) : (
                   <span className="ml-1 text-sm text-gray-500">
-                    Due {task.dueDate}
+                    Due {formatDate(task.dueDate)}
                   </span>
                 )}
               </div>

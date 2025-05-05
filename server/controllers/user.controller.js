@@ -1,4 +1,4 @@
-const { registrationUser, loginUser } = require('../services/user.service');
+const { registrationUser, loginUser,allUsers } = require('../services/user.service');
 
 const registrationUserResponse = async (req, res) => {
   try {
@@ -44,4 +44,24 @@ const loginUserResponse = async (req, res) => {
   }
 };
 
-module.exports = { registrationUserResponse, loginUserResponse };
+
+const getAllUsersResponse = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const users = await allUsers(userId);
+    res.status(200).json({
+      message: 'Users retrieved successfully',
+      err: null,
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to retrieve users',
+      err: error.message,
+      success: false,
+      data: {},
+    });
+  }
+}
+module.exports = { registrationUserResponse, loginUserResponse,getAllUsersResponse };

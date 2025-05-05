@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { List, Clock, CheckCircle, Loader, X, Plus } from "lucide-react";
 import {
   LineChart,
@@ -17,6 +17,9 @@ import TaskSection from "../components/TaskSection";
 import StatCard from "../components/StatCard";
 import TaskEditModal from "../components/TaskEditModal";
 import Dropdown from "../components/Dropdown";
+import axios from "axios";
+import { useCookies } from "react-cookie";
+import { buildQueryParams } from "../hooks/buildQueryParams";
 
 const chartData = [
   { name: "Mon", completed: 3, created: 5 },
@@ -93,6 +96,11 @@ export default function TaskDashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [cookie] = useCookies(["id"]);
+  const [selectedStatus, setSelectedStatus] = useState("All Statuses");
+  const [selectedPriority, setSelectedPriority] = useState("All Priorities");
+  const [selectedDueDate, setSelectedDueDate] = useState("Due Date");
 
   const handleEditTask = (task) => {
     setCurrentTask({ ...task });
@@ -104,38 +112,72 @@ export default function TaskDashboard() {
     setTaskToDelete(task);
   };
 
+  const fetchTaskData = useCallback(async () => {
+    try {
+      const params = buildQueryParams(
+        selectedStatus,
+        selectedPriority,
+        selectedDueDate
+      );
+
+      const response = await axios("http://localhost:3000/api/v1/tasks", {
+        params: { userId: cookie.id, ...params },
+      });
+
+      const { data } = await response.data;
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching task data:", error);
+    }
+  }, [cookie.id, selectedStatus, selectedPriority, selectedDueDate]);
+
+  useEffect(() => {
+    fetchTaskData();
+  }, [fetchTaskData]);
+
+  console.log("Tasks:", tasks);
+
   const stats = [
     {
       icon: <List className="text-indigo-600" size={24} />,
       title: "Total Tasks",
-      value: "24",
+      value: tasks?.allTasks?.length || 0,
       bg: "bg-indigo-100",
     },
     {
       icon: <CheckCircle className="text-green-600" size={24} />,
       title: "Completed",
-      value: "16",
+      value: tasks?.allTasks?.filter(task => task.status === "Completed").length || 0,
       bg: "bg-green-100",
     },
     {
       icon: <Loader className="text-blue-600" size={24} />,
       title: "In Progress",
-      value: "5",
+      value: tasks?.allTasks?.filter(task => task.status === "In Progress").length || 0,
       bg: "bg-blue-100",
     },
     {
       icon: <Clock className="text-red-600" size={24} />,
       title: "Overdue",
-      value: "3",
+      value: tasks?.allTasks?.filter(task => new Date(task.dueDate) < new Date() && task.status !== "Completed").length || 0,
       bg: "bg-red-100",
     },
   ];
 
-  const filters = {
-    status: ["All Statuses", "Completed", "In Progress", "Pending", "Overdue"],
-    priority: ["All Priorities", "High", "Medium", "Low"],
-    dueDate: ["Due Date", "Today", "This Week", "This Month"],
-  };
+  const filters = useMemo(
+    () => ({
+      status: [
+        "All Statuses",
+        "Completed",
+        "In Progress",
+        "Pending",
+        "Overdue",
+      ],
+      priority: ["All Priorities", "High", "Medium", "Low"],
+      dueDate: ["Due Date", "Today", "This Week", "This Month"],
+    }),
+    []
+  );
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">
@@ -156,80 +198,44 @@ export default function TaskDashboard() {
             ))}
           </div>
 
-          {/* Task Chart */}
-          <div className="mt-6 bg-white shadow rounded-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                Task Progress
-              </h3>
-              <div className="flex space-x-2">
-                <button className="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                  This Week
-                </button>
-                <button className="px-3 py-1 text-xs font-medium text-white bg-indigo-600 border border-indigo-600 rounded-md">
-                  This Month
-                </button>
-              </div>
-            </div>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="#f0f0f0"
-                  />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} />
-                  <Tooltip />
-                  <Legend align="right" iconType="circle" iconSize={8} />
-                  <Line
-                    type="monotone"
-                    dataKey="completed"
-                    name="Completed"
-                    stroke="#10B981"
-                    strokeWidth={2}
-                    activeDot={{ r: 6 }}
-                    dot={{ r: 4 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="created"
-                    name="Created"
-                    stroke="#4F46E5"
-                    strokeWidth={2}
-                    activeDot={{ r: 6 }}
-                    dot={{ r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
           {/* Task List & Filters */}
           <div className="mt-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-medium text-gray-900">Your Tasks</h3>
               <div className="flex space-x-2">
-                <Dropdown options={filters.status} />
-                <Dropdown options={filters.priority} />
-                <Dropdown options={filters.dueDate} />
+                <Dropdown
+                  options={filters.status}
+                  value={selectedStatus}
+                  onChange={(value) => setSelectedStatus(value)}
+                />
+
+                <Dropdown
+                  options={filters.priority}
+                  value={selectedPriority}
+                  onChange={(value) => setSelectedPriority(value)}
+                />
+
+                <Dropdown
+                  options={filters.dueDate}
+                  value={selectedDueDate}
+                  onChange={(value) => setSelectedDueDate(value)}
+                />
               </div>
             </div>
 
             <TaskSection
               title="ASSIGNED TO YOU"
-              tasks={taskData.assignedToYou}
+              tasks={tasks.assignedByYou}
               onEdit={handleEditTask}
             />
             <TaskSection
               title="CREATED BY YOU"
-              tasks={taskData.createdByYou}
+              tasks={tasks.createdByYou}
               onEdit={handleEditTask}
             />
             <TaskSection
               title="OVERDUE TASKS"
-              tasks={taskData.overdue}
+              tasks={tasks.overdueTasks}
               isOverdue={true}
               onEdit={handleEditTask}
             />

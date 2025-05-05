@@ -21,7 +21,8 @@ export default function AuthenticationPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [cookies, setCookie] = useCookies(["userData"]);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -37,6 +38,9 @@ export default function AuthenticationPage() {
 
         if (data?.data?.token) {
           setCookie("token", data.data.token, { path: "/" });
+          setCookie("id", data.data.user.id, { path: "/" });
+          setCookie("name", data.data.user.name, { path: "/" });
+
           toast.success("Login successful!");
           navigate("/");
         }

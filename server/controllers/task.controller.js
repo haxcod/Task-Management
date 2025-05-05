@@ -21,8 +21,8 @@ const createTaskResponse = async (req, res) => {
 
 const retrieveTaskResponse = async (req, res) => {
     try {
-        const { status, priority, dueBefore } = req.query;
-        const tasks = await retrieveTasks(status, priority, dueBefore);
+        const { status, priority, dueBefore, userId } = req.query;
+        const tasks = await retrieveTasks({ status, priority, dueBefore, userId });
         if (!tasks || tasks.length === 0) {
             return res.status(404).json({ data: {}, err: "No tasks found", success: true });
         }
