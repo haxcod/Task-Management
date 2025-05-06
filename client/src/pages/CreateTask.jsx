@@ -79,7 +79,7 @@ export default function CreateTaskPage() {
     if (validateForm()) {
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/v1/tasks",
+          `${apiUrl}/api/v1/tasks`,
           formData
         );
         const createdTask = response?.data?.data;
