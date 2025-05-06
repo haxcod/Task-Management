@@ -49,18 +49,18 @@ A feature-rich web application for managing tasks within a small team. Built wit
 2. **Install dependencies**
 
    ```bash
-   cd frontend && npm install
-   cd backend && npm install
+   cd client && npm install
+   cd server && npm install
    ```
 
 3. **Configure Environment**
 
-   - Create `.env` files in both frontend and backend folders with your secrets (DB_URI, JWT_SECRET, PORT, VITE_API_URL )
+   - Create `.env` files in both client and server folders with your secrets (DB_URI, JWT_SECRET, PORT, VITE_API_URL )
 
 4. **Run Backend**
 
    ```bash
-   npm run start:dev
+   npm start
    ```
 
 5. **Run Frontend**
