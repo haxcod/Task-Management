@@ -1,4 +1,3 @@
-
 # Task Management System
 
 A feature-rich web application for managing tasks within a small team. Built with **React.js**, **NodeJS**, and **MongoDB**, this system enables users to efficiently create, assign, and track tasks with collaboration features and secure authentication.
@@ -13,13 +12,14 @@ A feature-rich web application for managing tasks within a small team. Built wit
 
 ## Tech Stack
 
-| Frontend | Backend | Database | Auth | Deployment |
-|----------|---------|----------|------|-------------|
-| React.js  | NodeJs / Express | MongoDB | JWT | Vercel / Render |
+| Frontend | Backend          | Database | Auth | Deployment      |
+| -------- | ---------------- | -------- | ---- | --------------- |
+| React.js | NodeJs / Express | MongoDB  | JWT  | Vercel / Render |
 
 ---
 
 ### ✅ Core
+
 - **User Authentication**: Secure sign up and login using JWT.
 - **Task Management**: Full CRUD (Create, Read, Update, Delete) functionality.
 - **Dashboard**: Shows tasks assigned to the user, created by the user, and overdue tasks.
@@ -32,6 +32,7 @@ A feature-rich web application for managing tasks within a small team. Built wit
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (>= 18)
 - MongoDB or PostgreSQL instance
 - Yarn or npm
@@ -39,21 +40,25 @@ A feature-rich web application for managing tasks within a small team. Built wit
 ### Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/haxcod/task-management.git
    cd task-management
    ```
 
 2. **Install dependencies**
+
    ```bash
    cd frontend && npm install
    cd backend && npm install
    ```
 
 3. **Configure Environment**
-   - Create `.env` files in both frontend and backend folders with your secrets (DB_URI, JWT_SECRET, etc.)
+
+   - Create `.env` files in both frontend and backend folders with your secrets (DB_URI, JWT_SECRET, PORT, VITE_API_URL )
 
 4. **Run Backend**
+
    ```bash
    npm run start:dev
    ```
@@ -67,13 +72,13 @@ A feature-rich web application for managing tasks within a small team. Built wit
 
 ## 📌 API Routes (Sample)
 
-- `POST /auth/register` – Register user
-- `POST /auth/login` – Login user
-- `GET /tasks` – Fetch tasks
-- `POST /tasks` – Create new task
-- `PUT /tasks/:id` – Update task
-- `DELETE /tasks/:id` – Delete task
-- `GET /users/:id/tasks` – Get tasks by user
+- `POST /api/v1/register` – Register user
+- `POST /api/v1/login` – Login user
+- `GET /api/v1/tasks` – Fetch tasks
+- `POST /api/v1/tasks` – Create new task
+- `PUT /api/v1/tasks/:id` – Update task
+- `DELETE /api/v1/tasks/:id` – Delete task
+- `GET /api/v1/tasks/` – Get tasks by user
 
 ---
 
@@ -91,12 +96,6 @@ A feature-rich web application for managing tasks within a small team. Built wit
 - Email notifications
 - Export tasks (CSV, PDF)
 - Mobile app version (React Native)
-
----
-
-## 📄 License
-
-This project is open-sourced under the MIT License.
 
 ---
 

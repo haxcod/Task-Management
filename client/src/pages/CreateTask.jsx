@@ -4,12 +4,13 @@ import Drawer from "../components/Drawer";
 import Header from "../components/Header";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {useCookies} from 'react-cookie'
+import { useCookies } from "react-cookie";
 
 export default function CreateTaskPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [teamMembers, setTeamMembers] = useState([])
-  const [cookie, setCookie] = useCookies(['id'])
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [cookie, setCookie] = useCookies(["id"]);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -21,23 +22,14 @@ export default function CreateTaskPage() {
     createdBy: cookie.id,
   });
   const [errors, setErrors] = useState({});
+  const apiUrl = import.meta.env.VITE_API_URL;
 
-  
-
-  // const teamMembers = [
-  //   { id: 1, name: "Michael Brown", email: "michael@example.com" },
-  //   { id: 2, name: "Emily Davis", email: "emily@example.com" },
-  //   { id: 3, name: "Sarah Parker", email: "sarah@example.com" },
-  //   { id: 4, name: "James Wilson", email: "james@example.com" },
-  //   { id: 5, name: "Alex Johnson (You)", email: "alex@example.com" },
-  // ];
-
-  useEffect(()=>{
+  useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/v1/users");
+        const response = await axios.get(`${apiUrl}/api/v1/users`);
         console.log(response.data.data);
-        
+
         setTeamMembers(response.data.data);
       } catch (error) {
         console.error("Error fetching team members:", error);
@@ -45,10 +37,7 @@ export default function CreateTaskPage() {
     };
 
     fetchTeamMembers();
-  },[])
-
-
-
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,7 +75,7 @@ export default function CreateTaskPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data before submission:", formData);
-    
+
     if (validateForm()) {
       try {
         const response = await axios.post(

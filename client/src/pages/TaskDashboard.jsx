@@ -21,7 +21,8 @@ export default function TaskDashboard() {
   const [selectedStatus, setSelectedStatus] = useState("All Statuses");
   const [selectedPriority, setSelectedPriority] = useState("All Priorities");
   const [selectedDueDate, setSelectedDueDate] = useState("Due Date");
-
+  const apiUrl = import.meta.env.VITE_API_URL;
+  
   const handleEditTask = (task) => {
     setCurrentTask({ ...task });
     setIsEditModalOpen(true);
@@ -29,24 +30,44 @@ export default function TaskDashboard() {
   };
 
   const handleDeleteClick = async (task) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this task?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
     if (!isConfirmed) return;
-   console.log(task);
-   
+    console.log(task);
+
     try {
-      const response = await axios.delete(`http://localhost:3000/api/v1/tasks`,{params:{taskId: task}});
+      const response = await axios.delete(`${apiUrl}/api/v1/tasks`, {
+        params: { taskId: task },
+      });
       console.log("Deleted task:", response.data);
       toast.success("Task deleted successfully!");
       await fetchTaskData();
     } catch (error) {
       console.error("Failed to delete task:", error);
       toast.error("Failed to delete task. Please try again.");
-    }finally{
+    } finally {
       setIsEditModalOpen(false);
       setCurrentTask(null);
     }
   };
-  
+
+  const handleSaveTask = async (task) => {
+    try {
+      const updateTask = await axios.patch(`${apiUrl}/api/v1/tasks`, task, {
+        params: { taskId: task._id },
+      });
+      toast.success("Task updated successfully!");
+      await fetchTaskData();
+      console.log("Updated task:", updateTask.data);
+    } catch (error) {
+      console.error("Error updating task:", error);
+      toast.error("Failed to update task. Please try again.");
+    } finally {
+      setIsEditModalOpen(false);
+      setCurrentTask(null);
+    }
+  };
 
   const fetchTaskData = useCallback(async () => {
     try {
@@ -56,55 +77,60 @@ export default function TaskDashboard() {
         selectedDueDate
       );
 
-      const response = await axios("http://localhost:3000/api/v1/tasks", {
+      const response = await axios(`${apiUrl}/api/v1/tasks`, {
         params: { userId: cookie.id, ...params },
       });
 
       const { data } = await response.data;
       setTasks(data);
     } catch (error) {
+      toast.error("Failed to fetch tasks. Please check your connection.");
+
       console.error("Error fetching task data:", error);
     }
   }, [cookie.id, selectedStatus, selectedPriority, selectedDueDate]);
 
   useEffect(() => {
     fetchTaskData();
-  }, [fetchTaskData,]);
+  }, [fetchTaskData]);
 
-  const stats = [
-    {
-      icon: <List className="text-indigo-600" size={24} />,
-      title: "Total Tasks",
-      value: tasks?.allTasks?.length || 0,
-      bg: "bg-indigo-100",
-    },
-    {
-      icon: <CheckCircle className="text-green-600" size={24} />,
-      title: "Completed",
-      value:
-        tasks?.allTasks?.filter((task) => task.status === "Completed").length ||
-        0,
-      bg: "bg-green-100",
-    },
-    {
-      icon: <Loader className="text-blue-600" size={24} />,
-      title: "In Progress",
-      value:
-        tasks?.allTasks?.filter((task) => task.status === "In Progress")
-          .length || 0,
-      bg: "bg-blue-100",
-    },
-    {
-      icon: <Clock className="text-red-600" size={24} />,
-      title: "Overdue",
-      value:
-        tasks?.allTasks?.filter(
-          (task) =>
-            new Date(task.dueDate) < new Date() && task.status !== "Completed"
-        ).length || 0,
-      bg: "bg-red-100",
-    },
-  ];
+  const stats = useMemo(
+    () => [
+      {
+        icon: <List className="text-indigo-600" size={24} />,
+        title: "Total Tasks",
+        value: tasks?.allTasks?.length || 0,
+        bg: "bg-indigo-100",
+      },
+      {
+        icon: <CheckCircle className="text-green-600" size={24} />,
+        title: "Completed",
+        value:
+          tasks?.allTasks?.filter((task) => task.status === "Completed")
+            .length || 0,
+        bg: "bg-green-100",
+      },
+      {
+        icon: <Loader className="text-blue-600" size={24} />,
+        title: "In Progress",
+        value:
+          tasks?.allTasks?.filter((task) => task.status === "In Progress")
+            .length || 0,
+        bg: "bg-blue-100",
+      },
+      {
+        icon: <Clock className="text-red-600" size={24} />,
+        title: "Overdue",
+        value:
+          tasks?.allTasks?.filter(
+            (task) =>
+              new Date(task.dueDate) < new Date() && task.status !== "Completed"
+          ).length || 0,
+        bg: "bg-red-100",
+      },
+    ],
+    [tasks]
+  );
 
   const filters = useMemo(
     () => ({
@@ -170,7 +196,7 @@ export default function TaskDashboard() {
 
             <TaskSection
               title="ASSIGNED TO YOU"
-              tasks={tasks.assignedByYou}
+              tasks={tasks.assignedToYou}
               onEdit={handleEditTask}
             />
             <TaskSection
@@ -202,6 +228,7 @@ export default function TaskDashboard() {
           priority={filters.priority}
           dueDate={filters.dueDate}
           onDelete={handleDeleteClick}
+          onSave={handleSaveTask}
         />
       )}
     </div>

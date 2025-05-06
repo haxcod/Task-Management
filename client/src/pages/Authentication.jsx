@@ -25,16 +25,18 @@ export default function AuthenticationPage() {
 
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       if (isLogin) {
-        const { data } = await axios.post(
-          "http://localhost:3000/api/v1/login",
-          { email, password }
-        );
+        const { data } = await axios.post(`${apiUrl}/api/v1/login`, {
+          email,
+          password,
+        });
 
         if (data?.data?.token) {
           setCookie("token", data.data.token, { path: "/" });
@@ -45,10 +47,11 @@ export default function AuthenticationPage() {
           navigate("/");
         }
       } else {
-        const { data } = await axios.post(
-          "http://localhost:3000/api/v1/register",
-          { name, email, password }
-        );
+        const { data } = await axios.post(`${apiUrl}/api/v1/register`, {
+          name,
+          email,
+          password,
+        });
 
         if (data) {
           toast.success("Registration successful!");

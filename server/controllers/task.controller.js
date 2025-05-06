@@ -36,10 +36,10 @@ const retrieveTaskResponse = async (req, res) => {
 
 const updateTaskResponse = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { taskId } = req.query;
         const updateData = req.body;
 
-        const updated = await updateTask(id, updateData);
+        const updated = await updateTask(taskId, updateData);
         if (!updated) {
             return res.status(404).json({ data: {}, err: "Task not found", success: false });
         }

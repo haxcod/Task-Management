@@ -1,6 +1,8 @@
 import { Save, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const TaskEditModal = ({
   task,
@@ -9,6 +11,7 @@ const TaskEditModal = ({
   onDelete,
   status,
   priority,
+  onSave,
 }) => {
   const [editedTask, setEditedTask] = useState(task || {});
 
@@ -20,9 +23,9 @@ const TaskEditModal = ({
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-     console.log("handleSubmit", editedTask);
+     onSave(editedTask)
   };
 
 
