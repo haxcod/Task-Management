@@ -1,9 +1,18 @@
 import { Save, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
 
-const TaskEditModal = ({ task, isOpen, onClose, onSave, onDelete ,status,priority,dueDate}) => {
-  const [editedTask, setEditedTask] = useState(task);
+const TaskEditModal = ({
+  task,
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  status,
+  priority,
+  dueDate,
+}) => {
+  const [editedTask, setEditedTask] = useState(task || {});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,12 +27,21 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave, onDelete ,status,priorit
     onSave(editedTask);
   };
 
+  useEffect(() => {
+    setEditedTask(task);
+  }, [task]);
+
+  console.log("TaskEditModal task", task);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 -z-10 transition-opacity" aria-hidden="true">
+        <div
+          className="fixed inset-0 -z-10 transition-opacity"
+          aria-hidden="true"
+        >
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
 
@@ -49,7 +67,7 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave, onDelete ,status,priorit
           <div className="sm:flex sm:items-start">
             <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                {task.id ? "Edit Task" : "Create New Task"}
+                {task._id ? "Edit Task" : "Create New Task"}
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,8 +107,23 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave, onDelete ,status,priorit
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Dropdown  options={priority} />
-                <Dropdown  options={status} />
+                  <Dropdown
+                    name="priority"
+                    options={priority}
+                    value={editedTask.priority}
+                    onChange={(name, value) =>
+                      setEditedTask({ ...editedTask, [name]: value })
+                    }
+                  />
+
+                  <Dropdown
+                    name="status"
+                    options={status}
+                    value={editedTask.status}
+                    onChange={(name, value) =>
+                      setEditedTask({ ...editedTask, [name]: value })
+                    }
+                  />
                 </div>
 
                 <div>
@@ -110,45 +143,6 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave, onDelete ,status,priorit
                   />
                 </div>
 
-                {task.assignedTo && (
-                  <div>
-                    <label
-                      htmlFor="assignedTo"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Assigned To
-                    </label>
-                    <input
-                      type="text"
-                      name="assignedTo"
-                      id="assignedTo"
-                      value={editedTask.assignedTo}
-                      onChange={handleChange}
-                      className="pl-3 pr-10 py-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md outline-none"
-                    />
-                  </div>
-                )}
-
-                {task.assignedBy && (
-                  <div>
-                    <label
-                      htmlFor="assignedBy"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Assigned By
-                    </label>
-                    <input
-                      type="text"
-                      name="assignedBy"
-                      id="assignedBy"
-                      value={editedTask.assignedBy}
-                      onChange={handleChange}
-                      //   className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      readOnly
-                      className="bg-gray-50 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    />
-                  </div>
-                )}
 
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
                   <button
@@ -164,7 +158,7 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave, onDelete ,status,priorit
                   >
                     Cancel
                   </button>
-                  {task.id && (
+                  {task._id && (
                     <button
                       type="button"
                       onClick={() => onDelete(task.id)}

@@ -110,6 +110,9 @@ export default function TaskDashboard() {
 
   const handleDeleteClick = (task) => {
     setTaskToDelete(task);
+    console.log(task);
+    // Call the delete API here if needed
+    // axios.delete(`http://localhost:3000/api/v1/tasks/${task.id}`)
   };
 
   const fetchTaskData = useCallback(async () => {
@@ -147,19 +150,27 @@ export default function TaskDashboard() {
     {
       icon: <CheckCircle className="text-green-600" size={24} />,
       title: "Completed",
-      value: tasks?.allTasks?.filter(task => task.status === "Completed").length || 0,
+      value:
+        tasks?.allTasks?.filter((task) => task.status === "Completed").length ||
+        0,
       bg: "bg-green-100",
     },
     {
       icon: <Loader className="text-blue-600" size={24} />,
       title: "In Progress",
-      value: tasks?.allTasks?.filter(task => task.status === "In Progress").length || 0,
+      value:
+        tasks?.allTasks?.filter((task) => task.status === "In Progress")
+          .length || 0,
       bg: "bg-blue-100",
     },
     {
       icon: <Clock className="text-red-600" size={24} />,
       title: "Overdue",
-      value: tasks?.allTasks?.filter(task => new Date(task.dueDate) < new Date() && task.status !== "Completed").length || 0,
+      value:
+        tasks?.allTasks?.filter(
+          (task) =>
+            new Date(task.dueDate) < new Date() && task.status !== "Completed"
+        ).length || 0,
       bg: "bg-red-100",
     },
   ];
@@ -204,21 +215,24 @@ export default function TaskDashboard() {
               <h3 className="text-lg font-medium text-gray-900">Your Tasks</h3>
               <div className="flex space-x-2">
                 <Dropdown
+                  name="status"
                   options={filters.status}
                   value={selectedStatus}
-                  onChange={(value) => setSelectedStatus(value)}
+                  onChange={(name, value) => setSelectedStatus(value)}
                 />
 
                 <Dropdown
+                  name="priority"
                   options={filters.priority}
                   value={selectedPriority}
-                  onChange={(value) => setSelectedPriority(value)}
+                  onChange={(name, value) => setSelectedPriority(value)}
                 />
 
                 <Dropdown
+                  name="dueDate"
                   options={filters.dueDate}
                   value={selectedDueDate}
-                  onChange={(value) => setSelectedDueDate(value)}
+                  onChange={(name, value) => setSelectedDueDate(value)}
                 />
               </div>
             </div>
