@@ -22,7 +22,8 @@ export default function TaskDashboard() {
   const [selectedPriority, setSelectedPriority] = useState("All Priorities");
   const [selectedDueDate, setSelectedDueDate] = useState("Due Date");
   const apiUrl = import.meta.env.VITE_API_URL;
-  
+  const previousTasksRef = useRef([]);
+
   const handleEditTask = (task) => {
     setCurrentTask({ ...task });
     setIsEditModalOpen(true);
@@ -82,6 +83,13 @@ export default function TaskDashboard() {
       });
 
       const { data } = await response.data;
+
+      const previousTasks = previousTasksRef.current;
+
+      if (previousTasks.length > 0 && data.length > previousTasks.length) {
+        toast.success("New task added!");
+      }
+      previousTasksRef.current = data;
       setTasks(data);
     } catch (error) {
       toast.error("Failed to fetch tasks. Please check your connection.");
