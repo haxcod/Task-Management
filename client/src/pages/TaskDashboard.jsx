@@ -87,7 +87,7 @@ export default function TaskDashboard() {
       const previousTasks = previousTasksRef.current;
 
       if (previousTasks.length > 0 && data.length > previousTasks.length) {
-        toast.success("New task added!");
+        toast.info("New task added!");
       }
       previousTasksRef.current = data;
       setTasks(data);
@@ -99,9 +99,17 @@ export default function TaskDashboard() {
   }, [cookie.id, selectedStatus, selectedPriority, selectedDueDate]);
 
   useEffect(() => {
-    fetchTaskData();
-  }, [fetchTaskData]);
-
+    if (!cookie.id) return;
+  
+    fetchTaskData(); 
+  
+    const interval = setInterval(() => {
+      fetchTaskData();
+    }, 5000); 
+  
+    return () => clearInterval(interval);
+  }, [fetchTaskData, cookie.id]);
+  
   const stats = useMemo(
     () => [
       {
