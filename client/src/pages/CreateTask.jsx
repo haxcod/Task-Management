@@ -24,6 +24,8 @@ export default function CreateTaskPage() {
   const [errors, setErrors] = useState({});
   const apiUrl = import.meta.env.VITE_API_URL;
 
+  const today = new Date().toISOString().split("T")[0];
+
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
@@ -72,16 +74,25 @@ export default function CreateTaskPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  useEffect(() => {
+    if (!cookie.id) {
+      setFormData((prev) => ({ ...prev, createdBy: cookie.id }));
+    }
+  }, [cookie.id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data before submission:", formData);
+
 
     if (validateForm()) {
+
+      const finalData = {
+        ...formData,
+        createdBy: cookie.id,
+      };
+      console.log("Final data to be sent:", finalData);
       try {
-        const response = await axios.post(
-          `${apiUrl}/api/v1/tasks`,
-          formData
-        );
+        const response = await axios.post(`${apiUrl}/api/v1/tasks`, finalData);
         const createdTask = response?.data?.data;
 
         if (createdTask) {
@@ -92,8 +103,9 @@ export default function CreateTaskPage() {
             description: "",
             dueDate: "",
             dueTime: "",
-            priority: "",
-            status: "",
+            priority: "Medium",
+            status: "Pending",
+            createdBy: cookie.id,
           });
         } else {
           toast.error("Unexpected response from server.");
@@ -111,9 +123,6 @@ export default function CreateTaskPage() {
       console.log("Task creation cancelled");
     }
   };
-
-  // Generate today's date in YYYY-MM-DD format for min date attribute
-  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">

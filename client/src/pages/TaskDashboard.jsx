@@ -83,13 +83,26 @@ export default function TaskDashboard() {
       });
 
       const { data } = await response.data;
+      if (!Array.isArray(data.allTasks)) {
+        console.error("Expected an array but got:", data);
+        return;
+      }
 
       const previousTasks = previousTasksRef.current;
-
-      if (previousTasks.length > 0 && data.length > previousTasks.length) {
-        toast.info("New task added!");
+      const previousIds = new Set(previousTasks?.map(task => task._id));
+      const newTasks = data?.allTasks?.filter(task => !previousIds.has(task._id));
+  
+      if (previousTasks?.length > 0 && newTasks?.length > 0) {
+        toast.info(`${newTasks.length} new task added!`);
+  
+        // Optional browser notification
+        if (document.hidden && Notification.permission === "granted") {
+          new Notification("🆕 New Task Added", {
+            body: newTasks[0]?.title || "Check your task list.",
+          });
+        }
       }
-      previousTasksRef.current = data;
+      previousTasksRef.current = data.allTasks;
       setTasks(data);
     } catch (error) {
       toast.error("Failed to fetch tasks. Please check your connection.");
