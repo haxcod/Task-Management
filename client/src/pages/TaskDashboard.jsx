@@ -1,15 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { List, Clock, CheckCircle, Loader, X, Plus } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 
 import Drawer from "../components/Drawer";
 import Header from "../components/Header";
@@ -20,82 +10,12 @@ import Dropdown from "../components/Dropdown";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import { buildQueryParams } from "../hooks/buildQueryParams";
-
-const chartData = [
-  { name: "Mon", completed: 3, created: 5 },
-  { name: "Tue", completed: 5, created: 7 },
-  { name: "Wed", completed: 2, created: 4 },
-  { name: "Thu", completed: 4, created: 6 },
-  { name: "Fri", completed: 6, created: 8 },
-  { name: "Sat", completed: 8, created: 10 },
-  { name: "Sun", completed: 5, created: 7 },
-];
-
-const taskData = {
-  assignedToYou: [
-    {
-      id: 1,
-      title: "Update user authentication system",
-      description:
-        "Implement secure password hashing and JWT token authentication for the new user portal.",
-      assignedBy: "Sarah Parker",
-      dueDate: "May 5, 2025",
-      priority: "High",
-      status: "In Progress",
-    },
-    {
-      id: 2,
-      title: "Create new dashboard components",
-      description:
-        "Design and implement new analytics dashboard components for the admin panel.",
-      assignedBy: "James Wilson",
-      dueDate: "May 8, 2025",
-      priority: "Medium",
-      status: "Pending",
-    },
-  ],
-  createdByYou: [
-    {
-      id: 3,
-      title: "Review team collaboration features",
-      description:
-        "Test and review all team collaboration features before the next release.",
-      assignedTo: "Michael Brown",
-      dueDate: "May 10, 2025",
-      priority: "Medium",
-      status: "Pending",
-    },
-    {
-      id: 4,
-      title: "Implement search functionality",
-      description:
-        "Implement advanced search functionality with filtering options across the application.",
-      assignedTo: "Emily Davis",
-      dueDate: "May 7, 2025",
-      priority: "High",
-      status: "In Progress",
-    },
-  ],
-  overdue: [
-    {
-      id: 5,
-      title: "Fix notification system bugs",
-      description:
-        "Fix critical bugs in the notification system for task assignments and updates.",
-      assignedTo: "You",
-      dueDate: "April 30, 2025",
-      overdueDays: 1,
-      priority: "High",
-      status: "Overdue",
-    },
-  ],
-};
+import { toast } from "react-toastify";
 
 export default function TaskDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
-  const [taskToDelete, setTaskToDelete] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [cookie] = useCookies(["id"]);
   const [selectedStatus, setSelectedStatus] = useState("All Statuses");
@@ -108,12 +28,25 @@ export default function TaskDashboard() {
     console.log("Edit clicked:", task);
   };
 
-  const handleDeleteClick = (task) => {
-    setTaskToDelete(task);
-    console.log(task);
-    // Call the delete API here if needed
-    // axios.delete(`http://localhost:3000/api/v1/tasks/${task.id}`)
+  const handleDeleteClick = async (task) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this task?");
+    if (!isConfirmed) return;
+   console.log(task);
+   
+    try {
+      const response = await axios.delete(`http://localhost:3000/api/v1/tasks`,{params:{taskId: task}});
+      console.log("Deleted task:", response.data);
+      toast.success("Task deleted successfully!");
+      await fetchTaskData();
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+      toast.error("Failed to delete task. Please try again.");
+    }finally{
+      setIsEditModalOpen(false);
+      setCurrentTask(null);
+    }
   };
+  
 
   const fetchTaskData = useCallback(async () => {
     try {
@@ -136,9 +69,7 @@ export default function TaskDashboard() {
 
   useEffect(() => {
     fetchTaskData();
-  }, [fetchTaskData]);
-
-  console.log("Tasks:", tasks);
+  }, [fetchTaskData,]);
 
   const stats = [
     {
@@ -270,7 +201,6 @@ export default function TaskDashboard() {
           status={filters.status}
           priority={filters.priority}
           dueDate={filters.dueDate}
-          // onSave={handleSaveTask}
           onDelete={handleDeleteClick}
         />
       )}

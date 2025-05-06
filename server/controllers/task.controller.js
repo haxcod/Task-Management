@@ -52,9 +52,9 @@ const updateTaskResponse = async (req, res) => {
 
 const deleteTaskResponse = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        const deleted = await deleteTask(id);
+        const { taskId } = req.query;
+        
+        const deleted = await deleteTask(taskId);
         res.status(200).json({ data: deleted, err: {}, success: true });
     } catch (err) {
         console.error('Delete Task Error:', err);

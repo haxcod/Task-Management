@@ -6,11 +6,9 @@ const TaskEditModal = ({
   task,
   isOpen,
   onClose,
-  onSave,
   onDelete,
   status,
   priority,
-  dueDate,
 }) => {
   const [editedTask, setEditedTask] = useState(task || {});
 
@@ -24,14 +22,14 @@ const TaskEditModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(editedTask);
+     console.log("handleSubmit", editedTask);
   };
+
 
   useEffect(() => {
     setEditedTask(task);
   }, [task]);
 
-  console.log("TaskEditModal task", task);
 
   if (!isOpen) return null;
 
@@ -148,6 +146,7 @@ const TaskEditModal = ({
                   <button
                     type="submit"
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm outline-none"
+                    onSubmit={handleSubmit}
                   >
                     <Save size={16} className="mr-2" /> Save Changes
                   </button>
@@ -161,7 +160,7 @@ const TaskEditModal = ({
                   {task._id && (
                     <button
                       type="button"
-                      onClick={() => onDelete(task.id)}
+                      onClick={() => onDelete(task._id)}
                       className="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:w-auto sm:text-sm outline-none"
                     >
                       <Trash2 size={16} className="mr-2" /> Delete

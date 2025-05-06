@@ -63,12 +63,12 @@ const updateTask = async (id, updateData) => {
     }
 };
 
-const deleteTask = async (id) => {
+const deleteTask = async (taskId) => {
     try {
-        const deletedTask = await Task.findByIdAndDelete(id);
+        const deletedTask = await Task.findByIdAndDelete(taskId);
         return deletedTask;
     } catch (err) {
-        console.error(`Error in deleteTask for ID ${id}:`, err);
+        console.error(`Error in deleteTask for ID ${taskId}:`, err);
         throw err;
     }
 };
